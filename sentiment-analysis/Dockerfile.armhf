@@ -30,10 +30,12 @@ RUN pip3 install textblob && \
 
 RUN python3 -m textblob.download_corpora
 
-COPY handler.py .
-ENV fprocess="python3 handler.py"
+COPY index.py .
 
+ENV write_debug="true"
+EXPOSE 8080
 HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
+ENV fprocess="python3 index.py"
 
 CMD ["fwatchdog"]
 
