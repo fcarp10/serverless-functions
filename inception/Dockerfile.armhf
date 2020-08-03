@@ -1,0 +1,45 @@
+FROM openfaas/classic-watchdog:0.18.1 as watchdog
+FROM arm32v7/debian:buster-slim
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    python3-pip \
+    python3-dev \
+    gcc \
+    curl
+
+COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
+RUN chmod +x /usr/bin/fwatchdog
+
+RUN mkdir -p /home/app
+WORKDIR /home/app
+
+COPY requirements-armhf.txt ./
+
+# installing pre-compiled packages from piwheels to make pip installations faster
+RUN pip3 install -r requirements-armhf.txt -i https://www.piwheels.org/simple
+
+# tensorflow-estimator==1.14.0, tensorboard==2.1.0 not available in piwheels, normal pip3 installation before tensorflow
+RUN pip3 install tensorflow-estimator==1.14.0 tensorboard==2.0.0
+
+RUN pip3 install tensorflow==1.14.0 -i https://www.piwheels.org/simple
+
+# install additionla library missing
+RUN apt-get update && apt-get install -y \
+    libatlas3-base 
+
+ENV TF_CPP_MIN_LOG_LEVEL=3
+COPY *.py ./
+
+RUN python3 ./pre_download.py
+
+# COPY function/*.txt ./
+
+ENV write_debug="true"
+EXPOSE 8080
+HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
+ENV fprocess="python3 index.py"
+
+CMD ["fwatchdog"]
+
