@@ -9,6 +9,6 @@ Example of how to build a function for `arm`:
 
 ### Deploy functions:
 
-Example of how to deploy a function using docker hub:3
+Example of how to deploy a function using docker hub:
 
     faas-cli deploy --image fcarp10/inception:armhf --name inception --fprocess "python3 index.py"
