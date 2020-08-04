@@ -2,10 +2,6 @@ import sys
 import json
 from textblob import TextBlob
 
-# Set encoding to UTF-8 (vs ASCII to eliminate potential errors).
-reload(sys)
-sys.setdefaultencoding('utf8')
-
 def get_stdin():
     buf = ""
     for line in sys.stdin:
