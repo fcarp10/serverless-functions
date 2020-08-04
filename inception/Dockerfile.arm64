@@ -7,10 +7,13 @@ RUN chmod +x /usr/bin/fwatchdog
 RUN mkdir -p /home/app
 WORKDIR /home/app
 
-COPY requirements-armhf.txt ./
+# numpy arm64 not available in piwheels, normal pip3 installation
+RUN pip3 install numpy
+
+COPY requirements-arm64.txt ./
 
 # installing pre-compiled packages from piwheels to make pip installations faster
-RUN pip3 install -r requirements-armhf.txt -i https://www.piwheels.org/simple
+RUN pip3 install -r requirements-arm64.txt -i https://www.piwheels.org/simple
 
 # tensorflow-estimator and tensorboard not available in piwheels, normal pip3 installation before tensorflow
 RUN pip3 install tensorflow-estimator==1.14.0 tensorboard==2.0.0
