@@ -1,4 +1,4 @@
-FROM openfaas/classic-watchdog:0.18.1 as watchdog
+FROM openfaas/classic-watchdog:0.18.8 as watchdog
 FROM tensorflow/tensorflow:1.15.0
 
 RUN apt-get update -qy \
@@ -20,10 +20,7 @@ COPY *.py ./
 
 RUN python3 ./pre_download.py
 
-# COPY function/*.txt ./
-
 ENV write_debug="true"
-EXPOSE 8080
 HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
 ENV fprocess="python3 index.py"
 

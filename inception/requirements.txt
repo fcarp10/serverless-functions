@@ -17,7 +17,7 @@
 
 numpy==1.16.4
 scipy
-jupyter
+#jupyter
 matplotlib
 Pillow
 scikit-learn
@@ -30,7 +30,7 @@ tensorflow		# CPU Version of TensorFlow.
 # tensorflow-gpu	# GPU version of TensorFlow.
 
 # Builder API for TensorFlow used in many of the tutorials.
-prettytensor
+# prettytensor
 
 ################################################################
 # The tutorial on Reinforcement Learning uses OpenAI Gym.

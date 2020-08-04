@@ -1,13 +1,5 @@
 FROM openfaas/classic-watchdog:0.18.8 as watchdog
-FROM arm32v7/debian:buster-slim
-
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    pkg-config \
-    python3-pip \
-    python3-dev \
-    gcc \
-    curl
+FROM python:3.7-slim
 
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
@@ -20,20 +12,14 @@ COPY requirements.txt ./
 # installing pre-compiled packages from piwheels to make pip installations faster
 RUN pip3 install -r requirements.txt -i https://www.piwheels.org/simple
 
-
 RUN pip3 install textblob && \
     python3 -m textblob.download_corpora
-
-
-# RUN addgroup -g 1000 -S app && adduser -u 1000 -S app -G app
-# USER 1000
 
 RUN python3 -m textblob.download_corpora
 
 COPY index.py .
 
 ENV write_debug="true"
-EXPOSE 8080
 HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
 ENV fprocess="python3 index.py"
 

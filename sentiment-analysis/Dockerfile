@@ -1,27 +1,26 @@
 FROM openfaas/classic-watchdog:0.18.8 as watchdog
-
-FROM python:2.7-alpine
-
-RUN pip install textblob && \
-    python -m textblob.download_corpora
+FROM python:3.7-slim
 
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
 
-RUN addgroup -g 1000 -S app && adduser -u 1000 -S app -G app
-USER 1000
-
+RUN mkdir -p /home/app
 WORKDIR /home/app
 
-COPY requirements.txt   .
-RUN pip install -r requirements.txt
+COPY requirements.txt ./
 
-RUN python -m textblob.download_corpora
+RUN pip3 install -r requirements.txt 
 
-COPY handler.py .
-ENV fprocess="python handler.py"
+RUN pip3 install textblob && \
+    python3 -m textblob.download_corpora
 
+RUN python3 -m textblob.download_corpora
+
+COPY index.py .
+
+ENV write_debug="true"
 HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
+ENV fprocess="python3 index.py"
 
 CMD ["fwatchdog"]
 

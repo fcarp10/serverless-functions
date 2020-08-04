@@ -42,5 +42,5 @@ scikit-learn
 
 http-parser
 requests
-grpcio
-absl-py
+# grpcio
+# absl-py
