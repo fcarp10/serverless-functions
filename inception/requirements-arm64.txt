@@ -15,7 +15,7 @@
 ################################################################
 # Basic packages used in many of the tutorials.
 
-#numpy==1.16.4
+numpy==1.16.4
 scipy
 # jupyter
 matplotlib
@@ -42,5 +42,6 @@ scikit-learn
 
 http-parser
 requests
+h5py
 # grpcio
 # absl-py

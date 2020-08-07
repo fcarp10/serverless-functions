@@ -18,7 +18,7 @@ RUN python3 -m textblob.download_corpora
 
 COPY index.py .
 
-ENV write_debug="true"
+# ENV write_debug="true"
 HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
 ENV fprocess="python3 index.py"
 
