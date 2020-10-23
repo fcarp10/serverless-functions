@@ -1,26 +1,59 @@
-FROM openfaas/classic-watchdog:0.18.8 as watchdog
-FROM python:3.7-slim
+FROM openfaas/of-watchdog:0.8.1 as watchdog
+FROM python:3.7-alpine
+
 
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
 
-RUN mkdir -p /home/app
-WORKDIR /home/app
+ARG ADDITIONAL_PACKAGE
+# Alternatively use ADD https:// (which will not be cached by Docker builder)
+RUN apk --no-cache add openssl-dev ${ADDITIONAL_PACKAGE}
 
-COPY requirements.txt ./
+# Add non root user
+RUN addgroup -S app && adduser app -S -G app
+RUN chown app /home/app
 
-RUN pip3 install -r requirements.txt 
+USER app
+ENV PATH=$PATH:/home/app/.local/bin
+WORKDIR /home/app/
 
-RUN pip3 install textblob && \
-    python3 -m textblob.download_corpora
+COPY index.py           .
+COPY requirements.txt   .
 
-RUN python3 -m textblob.download_corpora
+USER root
+RUN pip install -r requirements.txt
 
-COPY index.py .
+#build function directory and install user specified componenets.
+USER app
 
-# ENV write_debug="true"
-HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
-ENV fprocess="python3 index.py"
+RUN mkdir -p function
+RUN touch ./function/__init__.py
+WORKDIR /home/app/function/
+COPY function/requirements.txt	.
+RUN pip install --user -r requirements.txt
+
+RUN python -m textblob.download_corpora
+
+WORKDIR /home/app/
+
+#install function code
+USER root
+
+COPY function   function
+RUN chown -R app:app ./
+
+#configure WSGI server and healthcheck
+USER app
+
+ENV fprocess="python index.py"
+
+ENV cgi_headers="true"
+ENV mode="http"
+ENV upstream_url="http://127.0.0.1:5000"
+
+ENV write_debug="false"
+
+HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
 
 CMD ["fwatchdog"]
 
