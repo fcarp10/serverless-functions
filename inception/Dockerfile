@@ -1,27 +1,60 @@
-FROM openfaas/classic-watchdog:0.18.8 as watchdog
-FROM tensorflow/tensorflow:1.15.0
+FROM openfaas/of-watchdog:0.8.1 as watchdog
+FROM python:3.7-slim-buster
 
-RUN apt-get update -qy \
- && apt-get install -qy \
-       python3-pip
 
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
 
-RUN mkdir -p /home/app
-WORKDIR /home/app
+ARG ADDITIONAL_PACKAGE
+# Alternatively use ADD https:// (which will not be cached by Docker builder)
+RUN apt-get -qy update && apt-get -qy install gcc make ${ADDITIONAL_PACKAGE}
 
-COPY requirements.txt ./
+# Add non root user
+RUN addgroup --system app && adduser app --system --ingroup app
+RUN chown app /home/app
 
-RUN pip3 install -r requirements.txt
+USER app
+ENV PATH=$PATH:/home/app/.local/bin
+WORKDIR /home/app/
 
-ENV TF_CPP_MIN_LOG_LEVEL=3
-COPY *.py ./
+COPY index.py           .
+COPY requirements.txt   .
 
-RUN python3 ./pre_download.py
+USER root
+RUN pip install -r requirements.txt
 
-ENV write_debug="true"
-HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
-ENV fprocess="python3 index.py"
+#build function directory and install user specified componenets.
+USER app
+
+RUN mkdir -p function
+RUN touch ./function/__init__.py
+WORKDIR /home/app/function/
+COPY function/requirements.txt	.
+RUN pip install --user -r requirements.txt
+
+RUN pip install --user tensorflow==1.14.0
+
+WORKDIR /home/app/
+
+#install function code
+USER root
+
+COPY function   function
+RUN chown -R app:app ./
+
+#configure WSGI server and healthcheck
+USER app
+
+RUN python function/pre_download.py
+
+ENV fprocess="python index.py"
+
+ENV cgi_headers="true"
+ENV mode="http"
+ENV upstream_url="http://127.0.0.1:5000"
+
+ENV write_debug="false"
+
+HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
 
 CMD ["fwatchdog"]

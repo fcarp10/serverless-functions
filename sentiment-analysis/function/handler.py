@@ -3,7 +3,7 @@ import json
 from textblob import TextBlob
 
 def handle(req):
-    print(str(req))
+
     buf = ""
     for line in str(req):
         buf = buf + line
