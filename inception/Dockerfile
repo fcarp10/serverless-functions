@@ -30,9 +30,12 @@ RUN mkdir -p function
 RUN touch ./function/__init__.py
 WORKDIR /home/app/function/
 COPY function/requirements.txt	.
-RUN pip install --user -r requirements.txt
 
-RUN pip install --user tensorflow==1.14.0
+ARG INDEX_URL
+RUN pip install --user -r requirements.txt ${INDEX_URL}
+ARG TENSORFLOW_PACKAGE=tensorflow==1.14.0
+RUN pip install --user ${TENSORFLOW_PACKAGE}
+
 
 WORKDIR /home/app/
 
