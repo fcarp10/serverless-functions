@@ -1,7 +1,6 @@
 FROM openfaas/of-watchdog:0.8.1 as watchdog
 FROM python:3.7-slim-buster
 
-
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
 
@@ -31,11 +30,7 @@ RUN touch ./function/__init__.py
 WORKDIR /home/app/function/
 COPY function/requirements.txt	.
 
-ARG INDEX_URL
-RUN pip install --user -r requirements.txt ${INDEX_URL}
-ARG TENSORFLOW_PACKAGE=tensorflow==1.14.0
-RUN pip install --user ${TENSORFLOW_PACKAGE}
-
+RUN pip install --user -r requirements.txt
 
 WORKDIR /home/app/
 
@@ -48,15 +43,11 @@ RUN chown -R app:app ./
 #configure WSGI server and healthcheck
 USER app
 
-RUN python function/pre_download.py
-
 ENV fprocess="python index.py"
 
 ENV cgi_headers="true"
 ENV mode="http"
 ENV upstream_url="http://127.0.0.1:5000"
-
-ENV write_debug="false"
 
 HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
 
