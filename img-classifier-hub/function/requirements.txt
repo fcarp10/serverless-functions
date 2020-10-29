@@ -1,3 +1,9 @@
-tensorflow==2.3.1
+# tensorflow==2.3.1
 tensorflow_hub
 pillow
+
+# to be removed when tensorflow 2 on piwheels
+scipy==1.4.1
+numpy==1.18.5
+grpcio
+h5py
