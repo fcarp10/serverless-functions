@@ -1,9 +1,11 @@
-# tensorflow==2.3.1
+# tensorflow==2.3.0 # temporal until available wheels for tensorflow
 tensorflow_hub
 pillow
 
-# to be removed when tensorflow 2 on piwheels
-scipy==1.4.1
-numpy==1.18.5
-grpcio
-h5py
+# temporal solution for tensorflow 2.3.0, until available wheels for tensorflow
+# scipy==1.4.1 # for armv7 only (from piwheels)
+scipy # for aarch64 only
+# numpy==1.18.5 # for armv7 only (from piwheels)
+numpy # for aarch64 only
+# grpcio # for armv7 only (from piwheels), not available yet for aarch64
+# h5py==2.10.0 # for armv7 only (from piwheels), not available yet for aarch64

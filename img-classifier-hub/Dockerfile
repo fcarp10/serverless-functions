@@ -32,6 +32,7 @@ COPY function/requirements.txt	.
 
 ARG INDEX_URL
 RUN pip install --user -r requirements.txt ${INDEX_URL}
+# temporal until available wheels for aarch64 tensorflow 
 ARG TENSORFLOW_PACKAGE=tensorflow==2.3.0
 RUN pip install --user ${TENSORFLOW_PACKAGE}
 
