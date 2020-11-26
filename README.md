@@ -22,4 +22,9 @@ Example of how to deploy and test a function from the store:
     faas store deploy NodeInfo
     curl http://127.0.0.1:8080/function/nodeinfo
 
+### Uninstall
+
+    /usr/local/bin/k3s-uninstall.sh
+    
+
 

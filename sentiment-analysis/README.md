@@ -9,7 +9,7 @@ Python function provides a rating on sentiment positive/negative (polarity -1.0-
 Deploy and test:
 
 ```
-faas deploy --image fcarp10/sentimentanalysis --name sentiment --fprocess "python index.py"
+faas deploy --image fcarp10/sentiment-analysis --name sentiment --fprocess "python index.py"
 curl http://127.0.0.1:8080/function/sentiment -d "Personally I like functions to do one thing and only one thing well, it makes them more readable."
 ```
 

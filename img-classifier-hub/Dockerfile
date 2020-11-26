@@ -22,7 +22,7 @@ COPY requirements.txt   .
 USER root
 RUN pip install -r requirements.txt
 
-#build function directory and install user specified componenets.
+#build function directory and install user specified components.
 USER app
 
 RUN mkdir -p function
@@ -30,11 +30,14 @@ RUN touch ./function/__init__.py
 WORKDIR /home/app/function/
 COPY function/requirements.txt	.
 
-ARG INDEX_URL
-RUN pip install --user -r requirements.txt ${INDEX_URL}
-# temporal until available wheels for aarch64 tensorflow 
+RUN pip install --upgrade pip
+RUN pip install --upgrade setuptools
+RUN pip install --user -r requirements.txt
+
+#### temporal until available wheels for tensorflow ####
 ARG TENSORFLOW_PACKAGE=tensorflow==2.3.0
 RUN pip install --user ${TENSORFLOW_PACKAGE}
+########################################################
 
 WORKDIR /home/app/
 
