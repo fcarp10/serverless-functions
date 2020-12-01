@@ -33,7 +33,14 @@ log "IF" "waiting for k3s to start..."
 sleep 30 
 
 log "IF" "installing openfaas..."
-arkade install openfaas
+export TIMEOUT=2m
+arkade install openfaas \
+--set gateway.upstreamTimeout=$TIMEOUT \
+--set gateway.writeTimeout=$TIMEOUT \
+--set gateway.readTimeout=$TIMEOUT \
+--set faasnetes.writeTimeout=$TIMEOUT \
+--set faasnetes.readTimeout=$TIMEOUT \
+--set queueWorker.ackWait=$TIMEOUT
 log "IF" "waiting for openfaas to start..."
 sleep 30 
 
