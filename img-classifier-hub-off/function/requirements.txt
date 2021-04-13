@@ -1,10 +1,10 @@
 # tensorflow==2.3.0 # temporal until available wheels
-tensorflow-hub
-pillow
-pybind11
+tensorflow-hub==0.10.0
+pillow==8.0.1
+pybind11==2.6.1
 Cython==0.29.21
 h5py==2.10.0
-grpcio
-scipy
-numpy
+grpcio==1.33.2
+scipy==1.4.1
+numpy==1.20.0
 
