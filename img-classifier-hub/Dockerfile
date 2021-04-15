@@ -16,8 +16,8 @@ USER app
 ENV PATH=$PATH:/home/app/.local/bin
 WORKDIR /home/app/
 
-COPY index.py           .
-COPY requirements.txt   .
+COPY index.py .
+COPY requirements.txt .
 
 USER root
 RUN pip install -r requirements.txt
@@ -28,7 +28,7 @@ USER app
 RUN mkdir -p function
 RUN touch ./function/__init__.py
 WORKDIR /home/app/function/
-COPY function/requirements.txt	.
+COPY function/requirements.txt .
 
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
@@ -44,7 +44,7 @@ WORKDIR /home/app/
 #install function code
 USER root
 
-COPY function   function
+COPY function function
 RUN chown -R app:app ./
 
 #configure WSGI server and healthcheck
@@ -56,6 +56,8 @@ ENV cgi_headers="true"
 ENV mode="http"
 ENV upstream_url="http://127.0.0.1:5000"
 
-HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
+# HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
+HEALTHCHECK --interval=30s --timeout=10s \
+    CMD curl --fail http://127.0.0.1:5000 || exit 1
 
 CMD ["fwatchdog"]
