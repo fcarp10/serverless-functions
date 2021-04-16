@@ -35,8 +35,8 @@ RUN pip install --upgrade setuptools
 RUN pip install --user -r requirements.txt
 
 #### temporal until available wheels for tensorflow ####
-ARG TENSORFLOW_PACKAGE=tensorflow==2.3.0
-RUN pip install --user ${TENSORFLOW_PACKAGE}
+ARG TENSORFLOW_PACKAGE=tensorflow==2.4.0
+RUN pip install --no-deps --user ${TENSORFLOW_PACKAGE}
 ########################################################
 
 WORKDIR /home/app/
@@ -58,6 +58,6 @@ ENV upstream_url="http://127.0.0.1:5000"
 
 # HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
 HEALTHCHECK --interval=30s --timeout=10s \
-    CMD curl --fail http://127.0.0.1:5000 || exit 1
+    CMD curl --fail http://127.0.0.1:5000/healthcheck || exit 1
 
 CMD ["fwatchdog"]

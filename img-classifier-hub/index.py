@@ -13,7 +13,7 @@ def is_true(val):
     return len(val) > 0 and val.lower() == "true" or val == "1"
 
 
-@app.route("/")
+@app.route("/healthcheck")
 def home():
     return "", 200, {"Content-Type": "text/plain; charset=utf-8"}
 
