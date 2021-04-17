@@ -14,3 +14,6 @@ functions:
             read_timeout: 1m
             write_timeout: 1m
             exec_timeout: 1m
+        annotations:
+            com.openfaas.health.http.path: "/healthcheck"
+            # com.openfaas.health.http.initialDelay: "30s"

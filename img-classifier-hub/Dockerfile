@@ -56,8 +56,8 @@ ENV cgi_headers="true"
 ENV mode="http"
 ENV upstream_url="http://127.0.0.1:5000"
 
-# HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
-HEALTHCHECK --interval=30s --timeout=10s \
-    CMD curl --fail http://127.0.0.1:5000/healthcheck || exit 1
+HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
+# HEALTHCHECK --interval=30s --timeout=10s \
+#    CMD curl --fail http://127.0.0.1:8080/healthcheck || exit 1
 
 CMD ["fwatchdog"]
