@@ -26,9 +26,7 @@ log "OK" "tools already installed"
 
 log "IF" "installing k3s..."
 curl -sfL https://get.k3s.io | sh -
-sudo chmod -R 777 /etc/rancher/k3s/k3s.yaml
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-kubectl config view --raw >~/.kube/config
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/k3s-config && sudo chown $USER: ~/.kube/k3s-config && export KUBECONFIG=~/.kube/k3s-config
 log "IF" "waiting for k3s to start..."
 sleep 30 
 
