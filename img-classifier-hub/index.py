@@ -8,14 +8,13 @@ import os
 
 app = Flask(__name__)
 
+with open("/tmp/.lock", "w") as f:
+	pass
+
+
 # distutils.util.strtobool() can throw an exception
 def is_true(val):
     return len(val) > 0 and val.lower() == "true" or val == "1"
-
-
-@app.route("/healthcheck")
-def home():
-    return "", 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 
 @app.before_request

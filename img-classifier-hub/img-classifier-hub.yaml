@@ -11,9 +11,8 @@ functions:
         labels:
             com.openfaas.scale.factor: 0
         environment:
-            read_timeout: 1m
-            write_timeout: 1m
-            exec_timeout: 1m
-        annotations:
-            com.openfaas.health.http.path: "/healthcheck"
+            read_timeout: 2m
+            write_timeout: 2m
+            exec_timeout: 2m
+        # annotations:
             # com.openfaas.health.http.initialDelay: "30s"
