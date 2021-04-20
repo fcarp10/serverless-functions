@@ -16,16 +16,13 @@ from PIL import Image
 from io import BytesIO
 import base64
 
-MODEL_URL = "https://tfhub.dev/google/imagenet/inception_v3/classification/4"
-IMAGE_LABELS_URL = (
-    "https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt"
-)
+MODEL_PATH = "function/model"
+IMAGE_LABELS_PATH = "function/model/image_labels.txt"
 IMAGE_SHAPE = (224, 224)
 
 classifier = tf.keras.Sequential(
-    [hub.KerasLayer(MODEL_URL, input_shape=IMAGE_SHAPE + (3,))]
+    [hub.KerasLayer(MODEL_PATH, input_shape=IMAGE_SHAPE + (3,))]
 )
-labels_path = tf.keras.utils.get_file("image_labels.txt", IMAGE_LABELS_URL)
 
 
 def preprocess_image(body):
@@ -46,7 +43,7 @@ def preprocess_image(body):
 def invoke(grace_hopper):
     result = classifier.predict(grace_hopper[np.newaxis, ...])
     predicted_class = np.argmax(result[0], axis=-1)
-    imagenet_labels = np.array(open(labels_path).read().splitlines())
+    imagenet_labels = np.array(open(IMAGE_LABELS_PATH).read().splitlines())
     predicted_class_name = imagenet_labels[predicted_class]
     return predicted_class_name
 

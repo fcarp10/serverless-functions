@@ -5,7 +5,6 @@ COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
 
 ARG ADDITIONAL_PACKAGE
-# Alternatively use ADD https:// (which will not be cached by Docker builder)
 RUN apt-get -qy update && apt-get -qy install gcc make ${ADDITIONAL_PACKAGE}
 
 # Add non root user
@@ -22,32 +21,35 @@ COPY requirements.txt .
 USER root
 RUN pip install -r requirements.txt
 
-#build function directory and install user specified components.
+# Build the function directory and install any user-specified components
 USER app
-
-RUN mkdir -p function
-RUN touch ./function/__init__.py
-WORKDIR /home/app/function/
-COPY function/requirements.txt .
 
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
+
+RUN mkdir -p function
+WORKDIR /home/app/function/
+COPY function/ .
+
 RUN pip install --user -r requirements.txt
 
-#### temporal until available wheels for tensorflow ####
+### Temporal until arm64 wheels available for tensorflow ####
 ARG TENSORFLOW_PACKAGE=tensorflow==2.4.0
 RUN pip install --no-deps --user ${TENSORFLOW_PACKAGE}
-########################################################
 
+### Download the model and labels
+RUN mkdir -p model
+WORKDIR /home/app/function/model
+ARG MODEL_URL
+ARG IMAGE_LABELS_URL
+RUN wget -q ${MODEL_URL} -O - | tar -xz
+RUN wget -q ${IMAGE_LABELS_URL} -O image_labels.txt
+
+USER root
+RUN chown -R app:app ../
 WORKDIR /home/app/
 
-#install function code
-USER root
-
-COPY function function
-RUN chown -R app:app ./
-
-#configure WSGI server and healthcheck
+# configure WSGI server and healthcheck
 USER app
 
 ENV fprocess="python index.py"
