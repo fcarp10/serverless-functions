@@ -1,2 +1,4 @@
 .vscode
 img-classifier-hub-off/function/model/
+.vagrant
+Vagrantfile

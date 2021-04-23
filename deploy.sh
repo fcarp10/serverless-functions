@@ -31,18 +31,19 @@ command -v curl >/dev/null 2>&1 || {
     exit 1
 }
 command -v faas >/dev/null 2>&1 || {
-    log "ERROR" "faas-cli not found, please install 'curl -SLsf https://cli.openfaas.com | sudo sh', aborting."
-    exit 1
+    log "WARN" "faas-cli not found, installing..."
+    curl -SLsf https://cli.openfaas.com | sudo sh
 }
 command -v helm >/dev/null 2>&1 || {
-    log "ERROR" "helm not found, please install 'curl -sSLf https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash', aborting."
-    exit 1
+    log "WARN" "helm not found, installing..."
+    curl -sSLf https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 }
 log "DONE" "tools already installed"
 
 ####### k3s #######
 log "INFO" "installing k3s..."
 curl -sfL https://get.k3s.io | sh -
+mkdir ~/.kube
 sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/k3s-config && sudo chown $USER: ~/.kube/k3s-config && export KUBECONFIG=~/.kube/k3s-config
 log "INFO" "waiting for k3s to start..."
 sleep 30
