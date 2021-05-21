@@ -2,7 +2,7 @@
 
 USER_DOCKER=fcarp10
 IMAGE=nats-bench-faas
-VERSION=v0.1.0
+VERSION=v1.0.0
 
 if [[ -z "${VERSION}" ]]; then
     echo "aborting..., specify a release version with 'export VERSION=v1.X.Y'"

@@ -10,10 +10,10 @@ import (
 func Handle(req handler.Request) (handler.Response, error) {
 	var err error
 
-	natsbench.ProcessRequest(string(req.Body))
+	var response = ProcessRequest(string(req.Body))
 
 	return handler.Response{
-		Body:       []byte("OK"),
+		Body:       []byte(response),
 		StatusCode: http.StatusOK,
 	}, err
 }

@@ -1,8 +1,7 @@
-package main
+package function
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -22,9 +21,9 @@ type content struct {
 	Topic   string
 }
 
-func ProcessRequest(data string) {
+func ProcessRequest(data string) string {
 	request := ConvertJson(data)
-	RunBench(request)
+	return RunBench(request)
 }
 
 func ConvertJson(jsonM string) content {
@@ -37,7 +36,7 @@ func ConvertJson(jsonM string) content {
 	return message
 }
 
-func RunBench(m content) {
+func RunBench(m content) string {
 
 	benchmark = bench.NewBenchmark("NATS", m.NumSubs, m.NumPubs)
 
@@ -79,8 +78,10 @@ func RunBench(m content) {
 
 	benchmark.Close()
 
-	fmt.Print(benchmark.Report())
-
+	// fmt.Print(benchmark.Report())
+	log.Printf("Pub: %s", benchmark.Pubs.Statistics())
+	log.Printf("Sub: %s", benchmark.Subs.Statistics())
+	return benchmark.CSV()
 }
 
 func runPublisher(nc *nats.Conn, startwg, donewg *sync.WaitGroup, numMsgs int, msgSize int, subj string) {
@@ -124,9 +125,4 @@ func runSubscriber(nc *nats.Conn, startwg, donewg *sync.WaitGroup, numMsgs int, 
 	benchmark.AddSubSample(bench.NewSample(numMsgs, msgSize, start, end, nc))
 	nc.Close()
 	donewg.Done()
-}
-
-func main() {
-
-	ProcessRequest(`{"url":"nats://demo.nats.io","numPubs":1,"numSubs":1, "numMsgs":100000, "msgSize":128, "topic":"benchmark"}`)
 }
