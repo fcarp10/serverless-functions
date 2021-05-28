@@ -6,8 +6,8 @@ Set of OpenFaas functions packaged to work with
 
 ## Functions
 
-- [figlet](https://github.com/fcarp10/openfaas-functions/tree/master/figlet)
 - [sentiment-analysis](https://github.com/fcarp10/openfaas-functions/tree/master/sentiment-analysis)
 - [img-classifier-hub](https://github.com/fcarp10/openfaas-functions/tree/master/img-classifier-hub)
-- [es-connect](https://github.com/fcarp10/openfaas-functions/tree/master/es-connect)
-- [nats-bench-faas](https://github.com/fcarp10/openfaas-functions/tree/master/nats-bench-faas)
+- [elastic-connector](https://github.com/fcarp10/openfaas-functions/tree/master/elastic-connector)
+- [nats-bench](https://github.com/fcarp10/openfaas-functions/tree/master/nats-bench)
+- [fib-go](https://github.com/fcarp10/openfaas-functions/tree/master/fib-go)
