@@ -1,12 +1,12 @@
 
-## Sentiment Analysis
+## sentiment-analysis 
 
 This is a forked version of the work by [Alexellis](https://github.com/openfaas/faas/tree/master/sample-functions/SentimentAnalysis) 
 
 Python function provides a rating on sentiment positive/negative (polarity -1.0-1.0) and subjectivity to provided to each of the sentences sent in via the [TextBlob project](http://textblob.readthedocs.io/en/dev/).
 
 
-Deploy and test:
+### Deploy and test:
 
 ```
 faas deploy --image fcarp10/sentiment-analysis --name sentiment --fprocess "python index.py"

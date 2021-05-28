@@ -1,7 +1,7 @@
 #! /bin/bash
 
 USER_DOCKER=fcarp10
-IMAGE=nats-bench-faas
+IMAGE=nats-bench
 VERSION=v1.0.0
 
 if [[ -z "${VERSION}" ]]; then

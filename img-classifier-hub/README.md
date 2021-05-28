@@ -1,4 +1,4 @@
-## Image classifier function using TensorFlow Hub
+## img-classifier-hub
 
 This function uses tensorflow hub and inception v3 model for image classification.
 

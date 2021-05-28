@@ -1,7 +1,7 @@
 #! /bin/bash
 
 USER_DOCKER=fcarp10
-IMAGE=es-connect
+IMAGE=elastic-connector
 VERSION=v1.0.0
 
 if [[ -z "${VERSION}" ]]; then
