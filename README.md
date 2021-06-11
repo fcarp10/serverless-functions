@@ -7,6 +7,7 @@ Set of OpenFaas functions packaged to work with
 ## Functions
 
 - [hello-world](https://github.com/fcarp10/openfaas-functions/tree/master/hello-world)
+- [payload-echo](https://github.com/fcarp10/openfaas-functions/tree/master/payload-echo)
 - [fib-go](https://github.com/fcarp10/openfaas-functions/tree/master/fib-go)
 - [sentiment-analysis](https://github.com/fcarp10/openfaas-functions/tree/master/sentiment-analysis)
 - [img-classifier-hub](https://github.com/fcarp10/openfaas-functions/tree/master/img-classifier-hub)
