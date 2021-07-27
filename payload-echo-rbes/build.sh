@@ -1,8 +1,8 @@
 #! /bin/bash
 
 USER_DOCKER=fcarp10
-IMAGE=fib-go
-VERSION=v1.0.1
+IMAGE=payload-echo-rbes
+VERSION=v1.0.0
 
 if [[ -z "${VERSION}" ]]; then
     echo "aborting..., specify a release version with 'export VERSION=v1.X.Y'"

@@ -13,3 +13,4 @@ Set of OpenFaas functions packaged to work with
 - [img-classifier-hub](https://github.com/fcarp10/openfaas-functions/tree/master/img-classifier-hub)
 - [elastic-connector](https://github.com/fcarp10/openfaas-functions/tree/master/elastic-connector)
 - [nats-bench](https://github.com/fcarp10/openfaas-functions/tree/master/nats-bench)
+- [payload-echo-rbes](https://github.com/fcarp10/openfaas-functions/tree/master/payload-echo-rbes)
