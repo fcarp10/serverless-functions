@@ -42,14 +42,14 @@ func ConvertJson(jsonM string) message {
 func ProcessRequest(data string) string {
 	request := ConvertJson(data)
 
-	if request.Test == "faas_rb" {
+	if request.Rburl != "" {
 		log.Println("Forwarding data to rabbitmq: " + request.Rburl)
 		rb := connecToRabbitmq(request.Rburl)
 		jsonMessage := message{Timestamp: request.Timestamp, Test: request.Test, Doc: request.Doc}
 		jsonData, _ := json.Marshal(jsonMessage)
 		publishToRabbitmq(rb, request.Exchangerb, request.Routingkeyrb, jsonData)
 		return data
-	} else if request.Test == "faas_es" {
+	} else if request.Esurl != "" {
 		log.Println("Forwarding data to elasticsearch: " + request.Esurl)
 		es := connectToElasticsearch(request.Esurl)
 		jsonMessage := message{Timestamp: request.Timestamp, Test: request.Test, Doc: request.Doc}
