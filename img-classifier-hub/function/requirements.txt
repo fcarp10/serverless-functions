@@ -1,7 +1,7 @@
 # Required by the function
 # tensorflow==2.4.0 # temporal until available wheels
 tensorflow-hub==0.10.0
-Pillow==8.2.0
+Pillow==9.0.0
 numpy==1.20.0
 
 # Required by tensorflow
