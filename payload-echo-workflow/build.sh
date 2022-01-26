@@ -3,8 +3,8 @@
 REGISTRY=registry.gitlab.com/ # comment out when pushing to docker hub 
 PROJECT=openfaas-functions/ # comment out when pushing to docker hub 
 USER_DOCKER=fcarp10
-IMAGE=payload-echo-rbes
-VERSION=v1.0.1
+IMAGE=payload-echo-workflow
+VERSION=v1.1.0
 
 if [[ -z "${VERSION}" ]]; then
     echo "aborting..., specify a release version with 'export VERSION=v1.X.Y'"

@@ -1,9 +1,12 @@
 package function
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -23,6 +26,8 @@ type message struct {
 	Ides         string          `json:"ides"`
 	Doces        string          `json:"doces"`
 	Pipees       string          `json:"pipees"`
+	Fsurl        string          `json:"fsurl"`
+	Forwards     int             `json:"forwards"`
 }
 
 type Conn struct {
@@ -48,18 +53,33 @@ func ProcessRequest(data string) string {
 		jsonMessage := message{Timestamp: request.Timestamp, Test: request.Test, Doc: request.Doc}
 		jsonData, _ := json.Marshal(jsonMessage)
 		publishToRabbitmq(rb, request.Exchangerb, request.Routingkeyrb, jsonData)
-		return data
 	} else if request.Esurl != "" {
 		log.Println("Forwarding data to elasticsearch: " + request.Esurl)
 		es := connectToElasticsearch(request.Esurl)
 		jsonMessage := message{Timestamp: request.Timestamp, Test: request.Test, Doc: request.Doc}
 		jsonData, _ := json.Marshal(jsonMessage)
 		insertDocument(es, request.Ides, request.Doces, jsonData, request.Pipees)
-		return data
+	} else if request.Fsurl != "" {
+		log.Println("Forwarding data to function: " + request.Fsurl)
+		if request.Forwards > 0 {
+			request.Forwards = request.Forwards - 1
+			jsonMessage := message{Fsurl: request.Fsurl, Timestamp: request.Timestamp, Test: request.Test, Doc: request.Doc, Forwards: request.Forwards}
+			jsonData, _ := json.Marshal(jsonMessage)
+			resp, err := http.Post(request.Fsurl, "application/json", bytes.NewBuffer(jsonData))
+			if err != nil {
+				log.Fatalf("HTTP Error response. Error: %s", err)
+			}
+			defer resp.Body.Close()
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				print(err)
+			}
+			return string(body)
+		}
 	} else {
 		log.Println("No test specified, just returning data")
-		return data
 	}
+	return data
 }
 
 func connecToRabbitmq(rabbitURL string) Conn {
