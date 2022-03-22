@@ -1,17 +1,16 @@
 #! /bin/bash
 
-REGISTRY=registry.gitlab.com/ # comment out when pushing to docker hub 
-PROJECT=openfaas-functions/ # comment out when pushing to docker hub 
-USER_DOCKER=fcarp10
-IMAGE=payload-echo-workflow
-VERSION=v1.1.0
+# general parameters
+USER_REGISTRY=fcarp10 # registry user name
+IMAGE=payload-echo-workflow # image tag name
+VERSION=v1.1.0 # image version
 
-if [[ -z "${VERSION}" ]]; then
-    echo "aborting..., specify a release version with 'export VERSION=v1.X.Y'"
-    exit 1
-fi
+# parameters when using registries different than docker hub, comment out otherwise
+REGISTRY_ALTER=registry.gitlab.com/ # registry different than docker hub (comment out for docker hub) 
+PROJECT_ALTER=openfaas-functions/ # project name (comment out for docker hub) 
 
-TAG="$REGISTRY""$USER_DOCKER"/"$PROJECT""$IMAGE"
+
+TAG="$REGISTRY_ALTER""$USER_REGISTRY"/"$PROJECT_ALTER""$IMAGE"
 
 docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 

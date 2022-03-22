@@ -1,5 +1,5 @@
 FROM ghcr.io/openfaas/of-watchdog:0.8.4 as watchdog
-FROM golang:1.15-alpine3.13 as build
+FROM golang:1.15-alpine3.14 as build
 
 ARG TARGETOS
 ARG TARGETARCH
