@@ -2,7 +2,7 @@
 # tensorflow==2.4.0 # temporal until available wheels
 tensorflow-hub==0.10.0
 Pillow==8.2.0
-numpy==1.20.0
+numpy==1.21.0
 
 # Required by tensorflow
 # (optional) to avoid tensorflow install wrong dependencies
