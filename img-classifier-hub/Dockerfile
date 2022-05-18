@@ -1,5 +1,5 @@
 FROM openfaas/of-watchdog:0.8.1 as watchdog
-FROM python:3.7-slim-buster
+FROM python:3.8-slim-buster
 
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
@@ -34,7 +34,7 @@ COPY function/ .
 RUN pip install --user -r requirements.txt
 
 ### Temporal until arm64 wheels available for tensorflow ####
-ARG TENSORFLOW_PACKAGE=tensorflow==2.4.0
+ARG TENSORFLOW_PACKAGE=tensorflow==2.4.1
 RUN pip install --no-deps --user ${TENSORFLOW_PACKAGE}
 
 ### Download the model and labels

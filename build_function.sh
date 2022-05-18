@@ -80,7 +80,6 @@ while true; do
         cd $image_tag || exit
         if [ "$image_tag" = "img-classifier-hub" ]; then
             source build_specific.sh
-            ./build_specific.sh
         else
             build_generic_image
         fi
