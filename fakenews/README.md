@@ -9,7 +9,7 @@ Step 4: Run this command: docker push your_docker_user_ID/fakenews:latest
 
 Step 5: While you are still in the fakenews directory on your terminal, do the necessary installations by running the command: bash setup.sh
 
-Once you have run setup.sh on your machine, you don't need to rerun it when next you start your system.
+Once you have run bash setup.sh on your machine, you don't need to rerun it when next you start your system.
 
 Step 5a: Whenever you reboot your system, go to your terminal and switch user to userfaas by running the command: su -- userfaas
 
