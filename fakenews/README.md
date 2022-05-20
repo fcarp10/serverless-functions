@@ -7,7 +7,7 @@ Step 3: Run this command: docker build -t your_docker_user_ID/fakenews .
 
 Step 4: Run this command: docker push your_docker_user_ID/fakenews:latest
 
-Step 5: While you are still in the fakenews directory on your terminal, do the necessary installations by running the command: bash setup1.sh and bash setup2.sh
+Step 5: While you are still in the fakenews directory on your terminal, do the necessary installations by running the commands: bash setup1.sh and bash setup2.sh
 
 Once you have run bash setup1.sh and bash setup2.sh on your machine, you don't need to rerun them when next you start your system.
 
