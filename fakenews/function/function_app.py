@@ -1,6 +1,7 @@
 #Import the libraries
 import math
 import pandas as pd
+from sklearn import metrics
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
@@ -11,7 +12,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.model_selection import cross_val_score, GridSearchCV
+from sklearn.model_selection import cross_val_score, GridSearchCV, train_test_split
 from sklearn.model_selection import RepeatedStratifiedKFold
 
 
@@ -19,7 +20,7 @@ from sklearn.model_selection import RepeatedStratifiedKFold
 def execute(req):
     # Dictionary for representing the results, the values would be None at the initial time
     global resultdict
-    resultdict = {'accuracy': None, 'best parameters': None}
+    resultdict = {'best parameters': None}
 
     #extract the elements of the X and y columns that would be used for the training
     X = []
@@ -30,7 +31,7 @@ def execute(req):
     for i in req['y_dict'].keys():
         label = req['y_dict'][str(i)]
         y.append(label)
-
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=6)
 
     #THE MODELS
 
@@ -49,7 +50,12 @@ def execute(req):
         # set n_jobs = -1 so as to use all the cores in ur system
         search = GridSearchCV(pipeline, param_grid, cv=cv, n_jobs=-1, scoring='accuracy')
         # execute search
-        result = search.fit(X, y)
+        search.fit(X_train, y_train)
+        result = search.fit(X_train, y_train)
+        # predict on test data
+        y_pred = search.predict(X_test)
+        # Evaluate the performance of the model
+        score = metrics.accuracy_score(y_test, y_pred)
         # summarize result
         d = result.best_params_
         pc = list(d.values())[0]
@@ -59,7 +65,8 @@ def execute(req):
         bestparamarr = {'C': pc, 'fit_intercept': m2, 'loss': ploss}
         #update the results dictionary with the values of the parameters and accuracy
         resultdict['best parameters'] = bestparamarr
-        resultdict['accuracy'] = result.best_score_
+        resultdict['accuracy (validation)'] = result.best_score_
+        resultdict['accuracy (test)'] = score
 
 
     #LOGISTIC REGRESSION
@@ -78,7 +85,12 @@ def execute(req):
         # set n_jobs = -1 so as to use all the cores in ur system
         search = GridSearchCV(pipeline2, param_grid, cv=cv, n_jobs=-1, scoring='accuracy')
         # execute search
-        result = search.fit(X, y)
+        search.fit(X_train, y_train)
+        result = search.fit(X_train, y_train)
+        # predict on test data
+        y_pred = search.predict(X_test)
+        # Evaluate the performance of the model
+        score = metrics.accuracy_score(y_test, y_pred)
         # summarize result
         d = result.best_params_
         lsolver = list(d.values())[2]
@@ -88,7 +100,8 @@ def execute(req):
         bestparamarr = {'C': lC, 'penalty': lpenalty, 'solver': lsolver}
         # update the results dictionary with the values of the parameters and accuracy
         resultdict['best parameters'] = bestparamarr
-        resultdict['accuracy'] = result.best_score_
+        resultdict['accuracy (validation)'] = result.best_score_
+        resultdict['accuracy (test)'] = score
 
 
     #NB MULTINOMIAL MODEL
@@ -98,14 +111,19 @@ def execute(req):
                               ('Mnb', MultinomialNB())])
         # define search space
         param_grid = {'Mnb__fit_prior': [True, False],
-                      'Mnb__alpha': [0.001, 0.01, 0.1, 1]}
+                      'Mnb__alpha': [0.0001, 0.001, 0.01, 0.1, 1, 10]}
         # define evaluation
         cv = RepeatedStratifiedKFold(n_splits=2, n_repeats=3, random_state=1)
         # define search
         # set n_jobs = -1 so as to use all the cores in ur system
         search = GridSearchCV(pipeline3, param_grid, cv=cv, n_jobs=-1, scoring='accuracy')
         # execute search
-        result = search.fit(X, y)
+        search.fit(X_train, y_train)
+        result = search.fit(X_train, y_train)
+        # predict on test data
+        y_pred = search.predict(X_test)
+        # Evaluate the performance of the model
+        score = metrics.accuracy_score(y_test, y_pred)
         # summarize result
         d = result.best_params_
         mnba = list(d.values())[0]
@@ -114,7 +132,8 @@ def execute(req):
         bestparamarr = {'alpha':mnba, 'fit_prior':m2}
         # update the results dictionary with the values of the parameters and accuracy
         resultdict['best parameters'] = bestparamarr
-        resultdict['accuracy'] = result.best_score_
+        resultdict['accuracy (validation)'] = result.best_score_
+        resultdict['accuracy (test)'] = score
 
 
     #MLP CLASSIFIER (NEURAL NETWORK)
@@ -143,17 +162,22 @@ def execute(req):
         pipeline4 = Pipeline([('tfidf', TfidfVectorizer(stop_words='english')),
                               ('MLPC', MLPClassifier(max_iter=1000000))])
         # define search space
-        param_grid = {'MLPC__hidden_layer_sizes': [(ndn, ndn), (int(ndn*2/3), int(ndn*2/3)), (int(ndn*4/9), int(ndn*4/9))],
-                      'MLPC__activation': ['logistic', 'tanh', 'relu'],
-                      #'MLPC__solver': ['lbfgs', 'sgd', 'adam'],
-                      'MLPC__learning_rate_init': [0.001, 0.01, 1]}
+        param_grid = {'MLPC__hidden_layer_sizes': [(ndn, ndn), (int(ndn*2/3), int(ndn*2/3))],
+                              'MLPC__activation': ['tanh', 'relu'],
+                              #'MLPC__solver': ['lbfgs', 'sgd', 'adam'],
+                              'MLPC__learning_rate_init': [0.001, 0.01, 1]}
         # define evaluation
         cv = RepeatedStratifiedKFold(n_splits=2, n_repeats=3, random_state=1)
         # define search
         # set n_jobs = -1 so as to use all the cores in ur system
         search = GridSearchCV(pipeline4, param_grid, cv=cv, n_jobs=-1, scoring='accuracy')
         # execute search
-        result = search.fit(X, y)
+        search.fit(X_train, y_train)
+        result = search.fit(X_train, y_train)
+        # predict on test data
+        y_pred = search.predict(X_test)
+        # Evaluate the performance of the model
+        score = metrics.accuracy_score(y_test, y_pred)
         # summarize result
         d = result.best_params_
         act = list(d.values())[0]
@@ -169,7 +193,8 @@ def execute(req):
                         #'solver': solv}
         # update the results dictionary with the values of the parameters and accuracy
         resultdict['best parameters'] = bestparamarr
-        resultdict['accuracy'] = result.best_score_
+        resultdict['accuracy (validation)'] = result.best_score_
+        resultdict['accuracy (test)'] = score
 
 
     #SUPPORT VECTOR CLASSIFIER
@@ -178,16 +203,21 @@ def execute(req):
         pipeline5 = Pipeline([('tfidf', TfidfVectorizer(stop_words='english')),
                               ('SVC', SVC(max_iter=1000000))])
         # define search space
-        param_grid = {'SVC__kernel': ['poly', 'rbf', 'sigmoid'],
+        param_grid = {'SVC__kernel': ['poly', 'rbf'],
                       'SVC__gamma': ['scale', 'auto'],
-                      'SVC__C': [0.01, 0.1, 1, 10]}
+                      'SVC__C': [0.1, 1]}
         # define evaluation
         cv = RepeatedStratifiedKFold(n_splits=2, n_repeats=3, random_state=1)
         # define search
         # set n_jobs = -1 so as to use all the cores in ur system
         search = GridSearchCV(pipeline5, param_grid, cv=cv, n_jobs=-1, scoring='accuracy')
         # execute search
-        result = search.fit(X, y)
+        search.fit(X_train, y_train)
+        result = search.fit(X_train, y_train)
+        # predict on test data
+        y_pred = search.predict(X_test)
+        # Evaluate the performance of the model
+        score = metrics.accuracy_score(y_test, y_pred)
         # summarize result
         d = result.best_params_
         sc = list(d.values())[0]
@@ -197,7 +227,8 @@ def execute(req):
         bestparamarr = {'C':sc, 'gamma':svcg, 'kernel':svck}
         # update the results dictionary with the values of the parameters and accuracy
         resultdict['best parameters'] = bestparamarr
-        resultdict['accuracy'] = result.best_score_
+        resultdict['accuracy (validation)'] = result.best_score_
+        resultdict['accuracy (test)'] = score
 
 
     #DECISION TREE CLASSIFIER
@@ -215,7 +246,12 @@ def execute(req):
         # set n_jobs = -1 so as to use all the cores in ur system
         search = GridSearchCV(pipeline6, param_grid, cv=cv, n_jobs=-1, scoring='accuracy')
         # execute search
-        result = search.fit(X, y)
+        search.fit(X_train, y_train)
+        result = search.fit(X_train, y_train)
+        # predict on test data
+        y_pred = search.predict(X_test)
+        # Evaluate the performance of the model
+        score = metrics.accuracy_score(y_test, y_pred)
         # summarize result
         d = result.best_params_
         crit = list(d.values())[0]
@@ -226,7 +262,8 @@ def execute(req):
         bestparamarr = {'criterion': crit, 'max_depth': md, 'max_features': mf}
         # update the results dictionary with the values of the parameters and accuracy
         resultdict['best parameters'] = bestparamarr
-        resultdict['accuracy'] = result.best_score_
+        resultdict['accuracy (validation)'] = result.best_score_
+        resultdict['accuracy (test)'] = score
 
 
     #K NEIGHBORS CLASSIFIER
@@ -244,7 +281,12 @@ def execute(req):
         # set n_jobs = -1 so as to use all the cores in ur system
         search = GridSearchCV(pipeline7, param_grid, cv=cv, n_jobs=-1, scoring='accuracy')
         # execute search
-        result = search.fit(X, y)
+        search.fit(X_train, y_train)
+        result = search.fit(X_train, y_train)
+        # predict on test data
+        y_pred = search.predict(X_test)
+        # Evaluate the performance of the model
+        score = metrics.accuracy_score(y_test, y_pred)
         # summarize result
         d = result.best_params_
         algo = list(d.values())[0]
@@ -254,7 +296,8 @@ def execute(req):
         bestparamarr = {'algorithm': algo, 'n_neighbors': nneigh, 'weights': wei}
         # update the results dictionary with the values of the parameters and accuracy
         resultdict['best parameters'] = bestparamarr
-        resultdict['accuracy'] = result.best_score_
+        resultdict['accuracy (validation)'] = result.best_score_
+        resultdict['accuracy (test)'] = score
 
 
     #RANDOM FOREST CLASSIFIER
@@ -272,7 +315,12 @@ def execute(req):
         # set n_jobs = -1 so as to use all the cores in ur system
         search = GridSearchCV(pipeline8, param_grid, cv=cv, n_jobs=-1, scoring='accuracy')
         # execute search
-        result = search.fit(X, y)
+        search.fit(X_train, y_train)
+        result = search.fit(X_train, y_train)
+        # predict on test data
+        y_pred = search.predict(X_test)
+        # Evaluate the performance of the model
+        score = metrics.accuracy_score(y_test, y_pred)
         # summarize result
         d = result.best_params_
         crit = list(d.values())[0]
@@ -284,8 +332,8 @@ def execute(req):
         bestparamarr = {'criterion': crit, 'max_depth': md, 'n_estimators': ne}
         # update the results dictionary with the values of the parameters and accuracy
         resultdict['best parameters'] = bestparamarr
-        resultdict['accuracy'] = result.best_score_
-
+        resultdict['accuracy (validation)'] = result.best_score_
+        resultdict['accuracy (test)'] = score
 
 
     return resultdict
