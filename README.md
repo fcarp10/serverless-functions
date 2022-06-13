@@ -6,66 +6,57 @@ Repository of OpenFaas functions built using [of-watchdog](https://github.com/op
 
 ### 1. `hello-world`
 
-Function in bash that returns `Hello World!` string.
+This function returns `Hello World!` string.
 
-```
-faas deploy --image fcarp10/hello-world --name hello-world
-curl http://127.0.0.1:8080/function/hello-world
+```shell
+foo@bar:~$ faas deploy --image fcarp10/hello-world --name hello-world
+foo@bar:~$ curl http://127.0.0.1:8080/function/hello-world
+Hello, World!
 ```
 
 ### 2. `payload-echo`
 
-This function returns back the string data received.
+This function returns the same payload sent using JSON.
 
-```
-faas deploy --image fcarp10/payload-echo --name payload-echo
-curl http://127.0.0.1:8080/function/payload-echo -d '{"test":"hello world!","index":"123"}'
+```shell
+foo@bar:~$ faas deploy --image fcarp10/payload-echo --name payload-echo
+foo@bar:~$ curl http://127.0.0.1:8080/function/payload-echo -d '{"test":"hello world!"}'
+{"test":"hello world!"}
 ```
 
 ### 3. `img-classifier-hub`
 
-This function uses tensorflow hub and inception v3 model for image classification.
+This function uses Tensorflow Hub and the inception v3 model to classify images.
+The image can be sent in the payload coded in Base64, or a URL of the image can
+be specified instead.
 
-```
-faas deploy --image fcarp10/img-classifier-hub --name img-classifier-hub --fprocess "python index.py"
-curl http://127.0.0.1:8080/function/img-classifier-hub -d "https://upload.wikimedia.org/wikipedia/commons/6/61/Humpback_Whale_underwater_shot.jpg"
+```shell
+foo@bar:~$ faas deploy --image fcarp10/img-classifier-hub --name img-classifier-hub --fprocess "python index.py"
+foo@bar:~$  curl http://127.0.0.1:8080/function/img-classifier-hub -d "https://upload.wikimedia.org/wikipedia/commons/6/61/Humpback_Whale_underwater_shot.jpg"
+sea lion
 ```
 
 ### 4. `fib-go`
 
-Recursive Fibonacci function in Go.
+This function calculates the recursive Fibonacci number from the specified value.
 
-```
-faas deploy --image fcarp10/fib-go --name fib-go
-curl http://127.0.0.1:8080/function/fib-go -d "10"
+```shell
+foo@bar:~$ faas deploy --image fcarp10/fib-go --name fib-go
+foo@bar:~$ curl http://127.0.0.1:8080/function/fib-go -d "10"
+102334155
 ```
 
 ### 5. `payload-echo-workflow`
 
-This function forwards the payload received to other endpoints.
+This function is used to create chain on functions on the server side. Specify
+the URL of the destination function in `dsturl`, the JSON message in `doc` and
+the length of the chain in `length`. If the workflow was successful, the
+response should have `"length":0`.
 
 ```shell
-faas deploy --image fcarp10/payload-echo-workflow --name payload-echo-workflow
-```
-Forwarding to rabbitmq (example):
-
-```shell
-curl http://127.0.0.1:8080/function/payload-echo-workflow -d '{"rburl":"amqp://user:password@rabbitmq:5672/","event_timestamp":"2021-07-27T13:19:19.923274599+02:00", "exchangerb":"amq.topic", "routingkeyrb":"logstash","doc":{"key_ex":"value_ex"}}'
-```
-Forwarding to elasticsearch (example):
-
-```shell
-curl http://127.0.0.1:8080/function/payload-echo-workflow -d '{"esurl":"http://elasticsearch-master:9200", "event_timestamp":"2021-07-27T13:19:19.923274599+02:00","ides":"bench_kns", "pipees": "calculate_lag", "doces":"1" ,"doc":{"key_ex":"value_ex"}}'
-```
-Forwarding to payload-echo-workflow (example):
-
-```shell
-curl http://127.0.0.1:8080/function/payload-echo-workflow -d '{"fsurl":"http://127.0.0.1:8080/function/payload-echo-workflow", "event_timestamp":"2021-07-27T13:19:19.923274599+02:00","doc":{"key_ex":"value_ex"}, "forwards": 3}'
-```
-Forwarding to client (example):
-
-```shell
-curl http://127.0.0.1:8080/function/payload-echo-workflow -d '{"event_timestamp":"2021-07-27T13:19:19.923274599+02:00","doc":{"key_ex":"value_ex"}}'
+foo@bar:~$ faas deploy --image fcarp10/payload-echo-workflow --name payload-echo-workflow
+foo@bar:~$ curl http://127.0.0.1:8080/function/payload-echo-workflow -d '{"dsturl":"http://127.0.0.1:8080/function/payload-echo-workflow","doc":{"test":"hello world!"}, "length": 10}'
+{"doc":{"test":"hello world!"},"dsturl":"http://127.0.0.1:8080/function/payload-echo-workflow","length":0}
 ```
 
 ### 6. `sentiment-analysis`
@@ -76,11 +67,21 @@ This function provides a rating on sentiment positive/negative
 (polarity-1.0-1.0) and subjectivity to provided to each of the sentences sent in
 via the [TextBlob project](http://textblob.readthedocs.io/en/dev/).
 
-```
-faas deploy --image fcarp10/sentiment-analysis --name sentiment --fprocess "python index.py"
-curl http://127.0.0.1:8080/function/sentiment -d "Personally I like functions to do one thing and only one thing well, it makes them more readable."
+```shell
+foo@bar:~$ faas deploy --image fcarp10/sentiment-analysis --name sentiment --fprocess "python index.py"
+foo@bar:~$ curl http://127.0.0.1:8080/function/sentiment -d "Personally I like functions to do one thing and only one thing well, it makes them more readable."
+{"polarity": 0.16666666666666666, "subjectivity": 0.6, "sentence_count": 1}
 ```
 
 ### 7. `fake-news-train`
 
-TBD
+This function trains a fake news detector ML model. The function expects in the
+payload a dictionary with the statements and labels defined in JSON format. An
+example of the data structure can be found
+[here](fake-news-train/example_data.json).
+
+```shell
+foo@bar:~$ faas deploy --image fcarp10/fake-news-train --name fake-news-train --fprocess "python index.py"
+foo@bar:~$ curl http://127.0.0.1:8080/function/fake-news-train -d @example_data.json
+{"accuracy":0.7809669703566341,"best parameters":{"alpha":0.01,"fit_prior":false}}
+```
