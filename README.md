@@ -19,7 +19,7 @@ Hello, World!
 This function forwards JSON payloads to a destination url which can be used to
 test chains of functions on the server side. If no destination is specified,
 then just returns the JSON payload to the client. If destination is `none`, then
-returns `none` regardless of the payload received.
+returns `{}` regardless of the payload received.
 
 ```shell
 foo@bar:~$ faas deploy --image fcarp10/payload-echo --name payload-echo
@@ -38,10 +38,10 @@ foo@bar:~$ faas deploy --image fcarp10/payload-echo --name payload-echo
     {"test":"hello world!"}
     ```
 
-- Case 3: If destination is `none`, then the function returns `none`:
+- Case 3: If destination is `none`, then the function returns `{}`:
     ```
     foo@bar:~$ curl http://127.0.0.1:8080/function/payload-echo -d '{"dst":"none", "test":"hello world!"}'
-    none
+    {}
     ```
 
 ### 3. `img-classifier-hub`

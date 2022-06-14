@@ -28,7 +28,7 @@ func ProcessRequest(data string) string {
 	request := ConvertJson(data)
 	if request.Dst != "" {
 		if request.Dst == "none" {
-			return "none" // return empty echo
+			return "{}" // return empty echo
 		}
 		if request.Length > 0 { // forward data
 			request.Length = request.Length - 1
