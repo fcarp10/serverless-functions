@@ -16,13 +16,33 @@ Hello, World!
 
 ### 2. `payload-echo`
 
-This function returns the same payload sent using JSON.
+This function forwards JSON payloads to a destination url which can be used to
+test chains of functions on the server side. If no destination is specified,
+then just returns the JSON payload to the client. If destination is `none`, then
+returns `none` regardless of the payload received.
 
 ```shell
 foo@bar:~$ faas deploy --image fcarp10/payload-echo --name payload-echo
-foo@bar:~$ curl http://127.0.0.1:8080/function/payload-echo -d '{"test":"hello world!"}'
-{"test":"hello world!"}
 ```
+
+- Case 1: The function forwards payload to `dst` url, this process is repeated N
+  times which value is specified in `length`:
+    ```
+    foo@bar:~$ curl http://127.0.0.1:8080/function/payload-echo -d '{"dst":"http://127.0.0.1:8080/function/payload-echo","doc":{"test":"hello world!"}, "length": 10}'
+    {"doc":{"test":"hello world!"},"dst":"http://127.0.0.1:8080/function/payload-echo","length":0}
+    ```
+
+- Case 2: If no destination url is specified, then the function returns the payload:
+    ```
+    foo@bar:~$ curl http://127.0.0.1:8080/function/payload-echo -d '{"test":"hello world!"}'
+    {"test":"hello world!"}
+    ```
+
+- Case 3: If destination is `none`, then the function returns `none`:
+    ```
+    foo@bar:~$ curl http://127.0.0.1:8080/function/payload-echo -d '{"dst":"none", "test":"hello world!"}'
+    none
+    ```
 
 ### 3. `img-classifier-hub`
 
@@ -46,20 +66,7 @@ foo@bar:~$ curl http://127.0.0.1:8080/function/fib-go -d "10"
 102334155
 ```
 
-### 5. `payload-echo-workflow`
-
-This function is used to create chain on functions on the server side. Specify
-the URL of the destination function in `dsturl`, the JSON message in `doc` and
-the length of the chain in `length`. If the workflow was successful, the
-response should have `"length":0`.
-
-```shell
-foo@bar:~$ faas deploy --image fcarp10/payload-echo-workflow --name payload-echo-workflow
-foo@bar:~$ curl http://127.0.0.1:8080/function/payload-echo-workflow -d '{"dsturl":"http://127.0.0.1:8080/function/payload-echo-workflow","doc":{"test":"hello world!"}, "length": 10}'
-{"doc":{"test":"hello world!"},"dsturl":"http://127.0.0.1:8080/function/payload-echo-workflow","length":0}
-```
-
-### 6. `sentiment-analysis`
+### 5. `sentiment-analysis`
 
 This is a forked version of the work by
 [Alexellis](https://github.com/openfaas/faas/tree/master/sample-functions/SentimentAnalysis).
@@ -73,7 +80,7 @@ foo@bar:~$ curl http://127.0.0.1:8080/function/sentiment -d "Personally I like f
 {"polarity": 0.16666666666666666, "subjectivity": 0.6, "sentence_count": 1}
 ```
 
-### 7. `fake-news-train`
+### 6. `fake-news-train`
 
 This function trains a fake news detector ML model. The function expects in the
 payload a dictionary with the statements and labels defined in JSON format. An

@@ -29,7 +29,7 @@ source image_versions.env
 read -p "Registry (e.g. registry.gitlab.com, or leave empty to use Docker Hub): " registry
 read -p "Project (e.g. openfaas-functions, or leave empty when using Docker Hub): " project
 read -p "User: " user_registry
-select image_tag in hello-world payload-echo img-classifier-hub fig-go payload-echo-workflow sentiment-analysis fake-news-train 
+select image_tag in hello-world payload-echo img-classifier-hub fig-go sentiment-analysis fake-news-train 
 do  
     case $image_tag in
 		hello-world)
@@ -44,9 +44,6 @@ do
 		fig-go) 
 			image_version=$fig_go_version									
 			;;		
-		payload-echo-workflow)
-			image_version=$payload_echo_workflow_version									
-			;;
 		sentiment-analysis)
 			image_version=$sentiment_analysis_version							
 			;;		
@@ -54,7 +51,7 @@ do
 			image_version=$fake_news_train_version							
 			;;
 		*)		
-			echo "Error: Please try again (select 1..7)!"
+			echo "Error: Please try again (select 1..6)!"
 			;;		
 	esac
     echo "Image tag selected $image_tag:$image_version"

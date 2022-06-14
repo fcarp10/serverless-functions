@@ -10,8 +10,10 @@ import (
 func Handle(req handler.Request) (handler.Response, error) {
 	var err error
 
+	var response = ProcessRequest(string(req.Body))
+
 	return handler.Response{
-		Body:       []byte(req.Body),
+		Body:       []byte(response),
 		StatusCode: http.StatusOK,
 	}, err
 }
