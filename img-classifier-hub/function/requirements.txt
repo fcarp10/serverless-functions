@@ -1,6 +1,6 @@
 # Required by the function
 tensorflow-hub==0.12.0
-Pillow==9.1.1
+Pillow==9.3.0
 numpy==1.22.3
 
 # Required by tensorflow
