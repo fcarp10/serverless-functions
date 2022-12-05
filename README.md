@@ -52,7 +52,7 @@ be specified instead.
 
 ```shell
 foo@bar:~$ faas deploy --image fcarp10/img-classifier-hub --name img-classifier-hub --fprocess "python index.py"
-foo@bar:~$  curl http://127.0.0.1:8080/function/img-classifier-hub -d "https://upload.wikimedia.org/wikipedia/commons/6/61/Humpback_Whale_underwater_shot.jpg"
+foo@bar:~$ curl http://127.0.0.1:8080/function/img-classifier-hub -d "https://upload.wikimedia.org/wikipedia/commons/6/61/Humpback_Whale_underwater_shot.jpg"
 sea lion
 ```
 
@@ -91,4 +91,14 @@ example of the data structure can be found
 foo@bar:~$ faas deploy --image fcarp10/fake-news-train --name fake-news-train --fprocess "python index.py"
 foo@bar:~$ curl http://127.0.0.1:8080/function/fake-news-train -d @example_data.json
 {"accuracy":0.7809669703566341,"best parameters":{"alpha":0.01,"fit_prior":false}}
+```
+
+### 7. `sleep`
+
+This function sleeps for a time duration specified in milliseconds.
+
+```shell
+foo@bar:~$ faas deploy --image fcarp10/sleep --name sleep
+foo@bar:~$ curl http://127.0.0.1:8080/function/sleep -d "1000"
+done!
 ```

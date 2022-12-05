@@ -1,6 +1,6 @@
 # Required by the function
 tensorflow-hub==0.12.0
-Pillow==9.1.1
+Pillow==9.3.0
 numpy==1.22.3
 
 # Required by tensorflow
@@ -8,7 +8,7 @@ numpy==1.22.3
 flatbuffers==1.12
 wheel==0.36.2
 wrapt==1.14.1
-protobuf==3.15.8
+protobuf==3.18.3
 grpcio==1.37.0
 absl-py==0.12.0
 termcolor==1.1.0
