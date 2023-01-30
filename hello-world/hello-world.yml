@@ -1,0 +1,10 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  hello-world:
+    image: fcarp10/hello-world
+    name: hello-world
+    # namespace: dev
+    skip_build: true

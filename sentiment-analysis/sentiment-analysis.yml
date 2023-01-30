@@ -1,0 +1,11 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  sentiment-analysis:
+    image: fcarp10/sentiment-analysis
+    name: sentiment-analysis
+    fprocess: "python index.py"
+    # namespace: dev
+    skip_build: true

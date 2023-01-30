@@ -1,0 +1,11 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  img-classifier-hub:
+    image: fcarp10/img-classifier-hub
+    name: img-classifier-hub
+    fprocess: "python index.py"
+    # namespace: dev
+    skip_build: true
