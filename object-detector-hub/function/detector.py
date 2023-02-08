@@ -1,3 +1,14 @@
+########################################################################
+#
+# Image classifier function for OpenFaaS using TensorFlow Hub.
+#
+# https://github.com/fcarp10/openfaas-functions
+#
+# Published under the MIT License. See the file LICENSE for details.
+#
+# Copyright 2023 by Francisco Carpio and Fin Gentzen
+#
+########################################################################
 # For running inference on the TF-Hub module.
 import tensorflow as tf
 
