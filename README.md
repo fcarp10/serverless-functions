@@ -19,7 +19,7 @@ architectures.
 classify images. The image can be sent in the payload coded in Base64 or by
 specifying the URL.
 - `object-detector-hub`: uses Tensorflow Hub and the FasterRCNN+InceptionResNet V2
-to apply object dectection to the images. The image can be sent by specifying the URL.
+to apply object dectection to the images. The image can be sent by specifying the URL. 
 - `sentiment-analysis`: is an updated version of the work by
 [Alexellis](https://github.com/openfaas/store-functions/tree/master/sentimentanalysis).
 This function provides a rating on sentiment positive/negative
