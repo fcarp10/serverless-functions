@@ -1,5 +1,5 @@
 pybase64==1.2.3
 matplotlib==3.6.3
 memory-tempfile==2.2.3
-tensorflow==2.4.1
+tensorflow==2.9.3
 tensorflow-hub==0.12.0
