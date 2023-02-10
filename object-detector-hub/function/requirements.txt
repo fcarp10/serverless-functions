@@ -6,7 +6,7 @@ numpy==1.22.3
 # Required by tensorflow 2.4.1
 # (optional) to avoid tensorflow install wrong dependencies
 flatbuffers==1.12
-wheel==0.36.2
+wheel==0.38.1
 wrapt==1.14.1
 protobuf==3.18.3
 grpcio==1.37.0
