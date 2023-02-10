@@ -34,14 +34,14 @@ COPY function/ .
 RUN pip install --user -r requirements.txt
 
 ### Temporal until arm64 wheels available for tensorflow ####
-ARG TENSORFLOW_PACKAGE=tensorflow==2.4.1
-RUN pip install --no-deps --user ${TENSORFLOW_PACKAGE}
+ARG EXTRA_ARG
+RUN pip install --no-deps --user ${EXTRA_ARG}
 
 ### Download the model and labels
 RUN mkdir -p model
 WORKDIR /home/app/function/model
-ARG MODEL_URL
-ARG IMAGE_LABELS_URL
+ARG MODEL_URL="https://tfhub.dev/google/imagenet/inception_v3/classification/5?tf-hub-format=compressed"
+ARG IMAGE_LABELS_URL="https://storage.googleapis.com/download.tensorflow.org/data/ImageNetLabels.txt"
 RUN wget -q ${MODEL_URL} -O - | tar -xz
 RUN wget -q ${IMAGE_LABELS_URL} -O image_labels.txt
 

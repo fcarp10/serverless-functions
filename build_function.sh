@@ -1,15 +1,19 @@
 #! /bin/bash
 
-function build_generic_image() {
+function build_image() {
     docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
 
-    docker buildx build --push --platform linux/amd64 --tag "$full_tag":"$image_version"-amd64 \
+    docker buildx build --provenance=false --push --platform linux/amd64 --tag "$full_tag":"$image_version"-amd64 \
         --build-arg TARGETOS=linux \
-        --build-arg TARGETARCH=amd64 .
+        --build-arg TARGETARCH=amd64 \
+        --build-arg ADDITIONAL_PACKAGE="$ADDITIONAL_PACKAGE_AMD64" \
+        --build-arg EXTRA_ARG="$EXTRA_ARG_AMD64" .
 
-    docker buildx build --push --platform linux/arm64 --tag "$full_tag":"$image_version"-arm64 \
+    docker buildx build --provenance=false --push --platform linux/arm64 --tag "$full_tag":"$image_version"-arm64 \
         --build-arg TARGETOS=linux \
-        --build-arg TARGETARCH=arm64 .
+        --build-arg TARGETARCH=arm64 \
+        --build-arg ADDITIONAL_PACKAGE="$ADDITIONAL_PACKAGE_ARM64" \
+        --build-arg EXTRA_ARG="$EXTRA_ARG_ARM64" .
 
     docker manifest create "$full_tag":"$image_version" \
         --amend "$full_tag":"$image_version"-arm64 \
@@ -24,40 +28,28 @@ function build_generic_image() {
     docker manifest push --purge "$full_tag":latest
 }
 
-source image_versions.env
+function print_docker_repo_tags() {
+    for Repo in $* ; do
+        curl -s -S "https://registry.hub.docker.com/v2/repositories/$1/$2/tags/?page_size=5" | \
+        sed -e 's/,/,\n/g' -e 's/\[/\[\n/g' | \
+        grep '"name"' | \
+        awk -F\" '{print $4;}' | \
+        sort -fu | \
+        sed -e "s/^/$2:/"
+    done
+}
 
 read -p "Registry (e.g. registry.gitlab.com, or leave empty to use Docker Hub): " registry
 read -p "Project (e.g. openfaas-functions, or leave empty when using Docker Hub): " project
 read -p "User: " user_registry
-select image_tag in hello-world payload-echo img-classifier-hub fig-go sentiment-analysis fake-news-train sleep
+
+select image_tag in */
 do  
-    case $image_tag in
-		hello-world)
-			image_version=$hello_world_version
-			;;
-		payload-echo)
-			image_version=$payload_echo_version	
-			;;
-		img-classifier-hub) 
-			image_version=$img_classifier_hub_version							    
-			;;		
-		fig-go) 
-			image_version=$fig_go_version									
-			;;		
-		sentiment-analysis)
-			image_version=$sentiment_analysis_version							
-			;;		
-		fake-news-train)
-			image_version=$fake_news_train_version							
-			;;
-        sleep)
-			image_version=$sleep_version							
-			;;
-		*)		
-			echo "Error: Please try again (select 1..7)!"
-			;;		
-	esac
-    echo "Image tag selected $image_tag:$image_version"
+    image_tag=${image_tag::-1} 
+    echo "Listing tags in registry ..."
+    print_docker_repo_tags $user_registry $image_tag
+    image_version=`echo $(grep "^$image_tag" versions.txt)`
+    image_version=${image_version#*=}
     break;
 done
 
@@ -73,16 +65,18 @@ fi
 full_tag=${registry}${user_registry}/${project}${image_tag}
 
 while true; do
-    echo "The image tag to build and push is: $full_tag:$image_version"
+    echo "Ready to build/push: $full_tag:$image_version"
     read -r -p "Are You Sure? [Y/n] " input
     case $input in
     [yY][eE][sS] | [yY])
         cd $image_tag || exit
-        if [ "$image_tag" = "img-classifier-hub" ]; then
-            source build_specific.sh
-        else
-            build_generic_image
+        if [[ $image_tag == *"-hub"* ]]; then
+            ADDITIONAL_PACKAGE_AMD64="wget"
+            EXTRA_ARG_AMD64="tensorflow==2.4.1"
+            ADDITIONAL_PACKAGE_ARM64="libatlas-base-dev gfortran libhdf5-dev libc-ares-dev libeigen3-dev libopenblas-dev libblas-dev liblapack-dev build-essential wget"
+            EXTRA_ARG_ARM64="https://github.com/KumaTea/tensorflow-aarch64/releases/download/v2.4/tensorflow-2.4.1-cp38-cp38-linux_aarch64.whl"
         fi
+        build_image
         break
         ;;
     [nN][oO] | [nN])

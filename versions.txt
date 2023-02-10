@@ -1,0 +1,8 @@
+hello-world=v1.1.0
+payload-echo=v2.0.1
+img-classifier-hub=v1.1.1
+object-detector-hub=v1.0.0
+fig-go=v1.0.1
+sentiment-analysis=v1.0.1
+fake-news-train=v1.0.0
+sleep=v1.0.0

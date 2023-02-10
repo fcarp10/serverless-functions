@@ -41,5 +41,5 @@ foo@bar:~/hello-world$ faas deploy -f hello-world.yml
 
 ## Build
 
-Modify the image version tag in `image_versions.env`. Run the
-`build_functions.sh` script and follow the instructions. 
+Modify the image version in `versions.txt`. Run the `build_function.sh` script
+and follow the instructions. 

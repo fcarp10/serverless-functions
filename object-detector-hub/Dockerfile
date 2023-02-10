@@ -4,10 +4,7 @@ FROM --platform=${TARGETPLATFORM:-linux/amd64} python:3.8-slim-buster as build
 COPY --from=watchdog /fwatchdog /usr/bin/fwatchdog
 RUN chmod +x /usr/bin/fwatchdog
 
-ARG ADDITIONAL_PACKAGE="wget"
-# Alternatively use ADD https:// (which will not be cached by Docker builder)
-
-#RUN apk --no-cache add openssl-dev ${ADDITIONAL_PACKAGE}
+ARG ADDITIONAL_PACKAGE
 RUN apt-get -qy update && apt-get -qy install gcc make ${ADDITIONAL_PACKAGE}
 
 # Add non root user
@@ -29,11 +26,19 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Build the function directory and install any user-specified components
 USER app
 
+RUN pip install --upgrade pip
+RUN pip install --upgrade setuptools
+
 RUN mkdir -p function
 RUN touch ./function/__init__.py
 WORKDIR /home/app/function/
 COPY --chown=app:app function/requirements.txt	.
+
 RUN pip install --no-cache-dir --user -r requirements.txt
+
+### Temporal until arm64 wheels available for tensorflow ####
+ARG EXTRA_ARG
+RUN pip install --no-deps --user ${EXTRA_ARG}
 
 ### Download the model
 RUN mkdir -p model
@@ -41,18 +46,11 @@ WORKDIR /home/app/function/model
 ARG MODEL_URL="https://tfhub.dev/google/faster_rcnn/openimages_v4/inception_resnet_v2/1?tf-hub-format=compressed"
 RUN wget -q ${MODEL_URL} -O - | tar -xz
 
-
 WORKDIR /home/app/function
 #install function code
 USER root
 
 COPY --chown=app:app function/   .
-
-
-# FROM build as test
-# ARG TEST_COMMAND=tox
-# ARG TEST_ENABLED=true
-# RUN [ "$TEST_ENABLED" = "false" ] && echo "skipping tests" || eval "$TEST_COMMAND"
 
 FROM build as ship
 WORKDIR /home/app/

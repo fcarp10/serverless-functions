@@ -3,25 +3,12 @@ provider:
     name: openfaas
     gateway: http://127.0.0.1:8080
 functions:
-    img-detector:
-        image: anyfin/img-detector
+    object-detector-hub:
+        image: fcarp10/object-detector-hub
+        name: object-detector-hub
+        # namespace: dev
         fprocess: "python3 index.py"
-        name: img-detector
         skip_build: true
-        annotations:
-            #com.openfaas.health.http.path: "/healthcheck"
-            #com.openfaas.health.http.initialDelay: "90s"
-            com.openfaas.health.http.startup.failureThreshold: 200
-        requests:
-            cpu: 1000m
-            memory: 2000Mi
-        labels:
-            com.openfaas.scale.factor: 20
-            com.openfaas.scale.min: 1
-            com.openfaas.scale.max: 30
-        #annotations:
-        #    prometheus.io.scrape: "true"
-        #    prometheus.io.port: "8081"
         environment:
             read_timeout: 5m
             write_timeout: 5m

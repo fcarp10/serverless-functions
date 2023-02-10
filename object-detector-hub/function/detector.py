@@ -15,7 +15,6 @@ import tensorflow as tf
 import tensorflow_hub as hub
 
 # For downloading the image.
-import matplotlib.pyplot as plt
 import tempfile
 from six.moves.urllib.request import urlopen
 from six import BytesIO
