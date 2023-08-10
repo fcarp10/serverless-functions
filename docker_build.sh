@@ -39,37 +39,80 @@ function print_docker_repo_tags() {
     done
 }
 
-read -p "Registry (e.g. registry.gitlab.com, or leave empty to use Docker Hub): " registry
-read -p "Project (e.g. openfaas-functions, or leave empty when using Docker Hub): " project
-read -p "User: " user_registry
 
-select image_tag in */
-do  
-    image_tag=${image_tag::-1} 
-    echo "Listing tags in registry ..."
-    print_docker_repo_tags $user_registry $image_tag
-    image_version=`echo $(grep "^$image_tag" versions.txt)`
-    image_version=${image_version#*=}
-    break;
+
+function show_usage (){
+    printf "Usage: $0 [options [parameters]]\n"
+    printf "\n"
+    printf "Options:\n"
+    printf " -u|--user, Username of the registry (required)\n"
+    printf " -i|--image, Image tag to build (required)\n"
+    printf " -r|--registry, Registry (default: docker.io)\n"
+    printf " -p|--project, Project (default: empty)\n"
+    printf " -d|--dir, Directory of the function (default: ./ )\n"
+    printf " -h|--help, Print help\n"
+exit 1
+}
+
+user_reg=""
+image_tag=""
+registry=""
+project=""
+dir="."
+
+while [ -n "$1" ]; do
+  case "$1" in
+     --user|-u)
+        shift
+        user_reg=$1
+         ;;
+     --image|-i)
+        shift
+        image_tag=$1
+         ;;
+     --registry|-r)
+         shift
+         registry=$1
+         ;;
+     --project|-p)
+         shift
+         project=$1
+         ;;
+     --dir|-d)
+        shift
+        dir=$1
+         ;;
+     *)
+        show_usage
+        ;;
+  esac
+shift
 done
 
-
-if [ ! -z "${registry}" ]; then
+if [ -n "${registry}" ]; then
     registry=${registry}/
 fi
 
-if [ ! -z "${project}" ]; then
+if [ -n "${project}" ]; then
     project=${project}/
 fi
 
-full_tag=${registry}${user_registry}/${project}${image_tag}
+if [ -z "${user_reg}" ] || [ -z "${image_tag}" ]; then
+    show_usage
+fi
 
+echo "Listing tags in registry ..."
+print_docker_repo_tags "$user_reg" "$image_tag"
+image_version=$(grep "^$image_tag" versions.txt)
+image_version=${image_version#*=}
+
+full_tag=${registry}${user_reg}/${project}${image_tag}
 while true; do
     echo "Ready to build/push: $full_tag:$image_version"
     read -r -p "Are You Sure? [Y/n] " input
     case $input in
     [yY][eE][sS] | [yY])
-        cd $image_tag || exit
+        cd "$dir"/"${image_tag}" || exit
         if [[ $image_tag == *"-hub"* ]]; then
             ADDITIONAL_PACKAGE_AMD64="wget"
             EXTRA_ARG_AMD64="tensorflow==2.4.1"
