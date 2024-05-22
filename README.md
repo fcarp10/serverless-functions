@@ -3,7 +3,9 @@
 Repository of serverless functions ([Docker images](https://hub.docker.com/repositories/fcarp10)).
 
 Generic functions
+- `hello-world`: replies with the string "Hello, World!" (HTTP GET).
 - `fib-fn`: calculates the recursive Fibonacci number of the specified value.
+- `payload-echo`: replies with whatever string is sent to it.
 - `sleep-fn`: sleeps for a time duration specified in milliseconds.
 
 [Here](openfaas-functions/) for OpenFaaS specific functions
