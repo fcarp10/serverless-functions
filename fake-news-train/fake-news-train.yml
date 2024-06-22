@@ -1,0 +1,11 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  fake-news-train:
+    image: fcarp10/fake-news-train
+    name: fake-news-train
+    fprocess: "python index.py"
+    # namespace: dev
+    skip_build: true
