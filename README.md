@@ -6,6 +6,7 @@ Generic functions
 - `hello-world`: replies with the string "Hello, World!" (HTTP GET).
 - `fib-fn`: calculates the recursive Fibonacci number of the specified value.
 - `payload-echo`: replies with whatever string is sent to it.
+- `payload-recv`: receives whatever string is sent to it and replies with HTTP 200.
 - `sleep-fn`: sleeps for a time duration specified in milliseconds.
 
 [Here](openfaas-functions/) for OpenFaaS specific functions
